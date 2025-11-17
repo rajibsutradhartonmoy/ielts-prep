@@ -20,6 +20,10 @@ COPY packages/shared-types ./packages/shared-types
 
 # Build the application
 WORKDIR /app/apps/web
+
+# Ensure public directory exists
+RUN mkdir -p public
+
 RUN pnpm run build
 
 # Production stage
