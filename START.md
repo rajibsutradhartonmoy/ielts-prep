@@ -50,7 +50,7 @@ Wait about 60 seconds for everything to start, then check:
 docker-compose ps
 
 # Check API health
-curl http://localhost:3001/health
+curl http://localhost:8081/health
 ```
 
 You should see:
@@ -66,9 +66,10 @@ You should see:
 
 ### Step 5: Access the Application
 
-- **API**: http://localhost:3001
-- **API Documentation**: http://localhost:3001/api/docs
-- **Health Check**: http://localhost:3001/health
+- **Frontend**: http://localhost:8080
+- **API**: http://localhost:8081
+- **API Documentation**: http://localhost:8081/api/docs
+- **Health Check**: http://localhost:8081/health
 
 ---
 
@@ -192,7 +193,7 @@ docker-compose up -d --build
 
 ## 📚 Next Steps
 
-1. **Create your first user** - Visit http://localhost:3001/api/docs
+1. **Create your first user** - Visit http://localhost:8081/api/docs
 2. **Test authentication** - Try the login endpoint
 3. **Explore all endpoints** - Check out the Swagger documentation
 4. **Read full setup guide** - See [SETUP.md](./SETUP.md) for details
@@ -220,10 +221,11 @@ docker-compose up -d
 sleep 60
 
 # 5. Check health
-curl http://localhost:3001/health
+curl http://localhost:8081/health
 
 # 6. Open browser
-# Visit: http://localhost:3001/api/docs
+# Visit: http://localhost:8080 (Frontend)
+# Visit: http://localhost:8081/api/docs (API Docs)
 ```
 
 **That's it! You're ready to go! 🎉**
@@ -234,9 +236,10 @@ curl http://localhost:3001/health
 
 The following defaults are used if not specified in `.env`:
 
-- **Database**: postgres:postgres@localhost:5432/ielts_prep
-- **Redis**: localhost:6379 (no password)
-- **API Port**: 3001
+- **Database**: postgres:postgres@localhost:54320/ielts_prep
+- **Redis**: localhost:63790 (no password)
+- **Frontend Port**: 8080
+- **API Port**: 8081
 - **Node Environment**: development
 - **JWT Expiration**: 15 minutes (access), 7 days (refresh)
 - **CORS**: Allow all origins in development
