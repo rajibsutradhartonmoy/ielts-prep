@@ -17,6 +17,10 @@ import { TestModule } from './modules/test/test.module';
 import { TestAssignmentModule } from './modules/test-assignment/test-assignment.module';
 import { GradingModule } from './modules/grading/grading.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { FileUploadModule } from './modules/file-upload/file-upload.module';
+import { JobsModule } from './modules/jobs/jobs.module';
+import { HealthModule } from './modules/health/health.module';
 
 import { TenantContextMiddleware } from './common/middleware/tenant-context.middleware';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -47,6 +51,10 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     TestAssignmentModule,
     GradingModule,
     AnalyticsModule,
+    NotificationModule,
+    FileUploadModule,
+    JobsModule,
+    HealthModule,
   ],
   providers: [
     {
