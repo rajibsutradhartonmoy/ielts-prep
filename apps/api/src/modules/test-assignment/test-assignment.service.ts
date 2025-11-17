@@ -5,7 +5,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { eq, and, sql, isNull, desc, gte, lte, or, inArray } from 'drizzle-orm';
-import { DatabaseService } from '../../database/database.service';
+import { Inject } from '@nestjs/common';
+import { DATABASE_CONNECTION, Database } from '../../database/database.module';
 import * as schema from '../../database/schema';
 import {
   CreateIndividualAssignmentDto,
@@ -17,7 +18,7 @@ import {
 
 @Injectable()
 export class TestAssignmentService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(@Inject(DATABASE_CONNECTION) private readonly db: Database) {}
 
   // Test Assignment CRUD
   async createIndividualAssignment(

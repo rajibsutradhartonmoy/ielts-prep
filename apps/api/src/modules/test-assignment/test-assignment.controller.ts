@@ -13,6 +13,7 @@ import {
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { AuthenticatedRequest } from '../../common/types/request.types';
 import { TestAssignmentService } from './test-assignment.service';
 import {
   CreateIndividualAssignmentDto,
@@ -33,7 +34,7 @@ export class TestAssignmentController {
   @Post('individual')
   @Roles('organization_admin', 'teacher')
   async createIndividualAssignment(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: CreateIndividualAssignmentDto,
   ) {
     return this.testAssignmentService.createIndividualAssignment(
@@ -46,7 +47,7 @@ export class TestAssignmentController {
   @Post('batch')
   @Roles('organization_admin', 'teacher')
   async createBatchAssignment(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: CreateBatchAssignmentDto,
   ) {
     return this.testAssignmentService.createBatchAssignment(
@@ -59,7 +60,7 @@ export class TestAssignmentController {
   @Get()
   @Roles('organization_admin', 'teacher', 'student')
   async getAssignments(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Query('studentId') studentId?: string,
     @Query('batchId') batchId?: string,
     @Query('testId') testId?: string,
@@ -90,7 +91,7 @@ export class TestAssignmentController {
 
   @Get(':assignmentId')
   @Roles('organization_admin', 'teacher', 'student')
-  async getAssignment(@Request() req, @Param('assignmentId') assignmentId: string) {
+  async getAssignment(@Request() req: AuthenticatedRequest, @Param('assignmentId') assignmentId: string) {
     return this.testAssignmentService.getAssignmentById(
       req.user.organizationId,
       assignmentId,
@@ -100,7 +101,7 @@ export class TestAssignmentController {
   @Put(':assignmentId')
   @Roles('organization_admin', 'teacher')
   async updateAssignment(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('assignmentId') assignmentId: string,
     @Body() dto: UpdateAssignmentDto,
   ) {
@@ -114,7 +115,7 @@ export class TestAssignmentController {
   @Delete(':assignmentId')
   @Roles('organization_admin', 'teacher')
   async deleteAssignment(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('assignmentId') assignmentId: string,
   ) {
     return this.testAssignmentService.deleteAssignment(
@@ -126,7 +127,7 @@ export class TestAssignmentController {
   // Student test-taking endpoints
   @Post(':assignmentId/start')
   @Roles('student')
-  async startAttempt(@Request() req, @Param('assignmentId') assignmentId: string) {
+  async startAttempt(@Request() req: AuthenticatedRequest, @Param('assignmentId') assignmentId: string) {
     return this.testAssignmentService.startAttempt(
       req.user.studentId,
       assignmentId,
@@ -135,7 +136,7 @@ export class TestAssignmentController {
 
   @Get('attempts/:attemptId')
   @Roles('student', 'teacher', 'organization_admin')
-  async getAttempt(@Request() req, @Param('attemptId') attemptId: string) {
+  async getAttempt(@Request() req: AuthenticatedRequest, @Param('attemptId') attemptId: string) {
     // Students can only see their own attempts
     if (req.user.role === 'student') {
       return this.testAssignmentService.getAttempt(
@@ -150,7 +151,7 @@ export class TestAssignmentController {
   @Put('attempts/:attemptId/progress')
   @Roles('student')
   async saveProgress(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('attemptId') attemptId: string,
     @Body() dto: SaveProgressDto,
   ) {
@@ -164,7 +165,7 @@ export class TestAssignmentController {
   @Post('attempts/:attemptId/submit')
   @Roles('student')
   async submitTest(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('attemptId') attemptId: string,
     @Body() dto: SubmitTestDto,
   ) {
@@ -178,7 +179,7 @@ export class TestAssignmentController {
   @Get(':assignmentId/student-attempts')
   @Roles('student')
   async getStudentAttempts(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('assignmentId') assignmentId: string,
   ) {
     return this.testAssignmentService.getStudentAttempts(

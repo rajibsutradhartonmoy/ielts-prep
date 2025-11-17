@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
 import { Inject } from '@nestjs/common';
-import { DRIZZLE_PROVIDER } from '../../../database/database.provider';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import * as schema from '../../../database/schema';
+import { DATABASE_CONNECTION, Database } from '../../../database/database.module';
+import { sql } from 'drizzle-orm';
 
 @Injectable()
 export class DatabaseHealthIndicator extends HealthIndicator {
   constructor(
-    @Inject(DRIZZLE_PROVIDER)
-    private readonly db: NodePgDatabase<typeof schema>,
+    @Inject(DATABASE_CONNECTION)
+    private readonly db: Database,
   ) {
     super();
   }
@@ -17,13 +16,13 @@ export class DatabaseHealthIndicator extends HealthIndicator {
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
     try {
       // Simple query to check database connectivity
-      await this.db.execute('SELECT 1');
+      await this.db.execute(sql`SELECT 1`);
 
       return this.getStatus(key, true, { message: 'Database is healthy' });
     } catch (error) {
       throw new HealthCheckError(
         'Database check failed',
-        this.getStatus(key, false, { message: error.message }),
+        this.getStatus(key, false, { message: (error as Error).message }),
       );
     }
   }

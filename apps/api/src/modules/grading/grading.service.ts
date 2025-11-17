@@ -5,7 +5,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { eq, and, sql, desc, asc, or, isNull } from 'drizzle-orm';
-import { DatabaseService } from '../../database/database.service';
+import { Inject } from '@nestjs/common';
+import { DATABASE_CONNECTION, Database } from '../../database/database.module';
 import * as schema from '../../database/schema';
 import {
   GradeResponseDto,
@@ -16,7 +17,7 @@ import {
 
 @Injectable()
 export class GradingService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(@Inject(DATABASE_CONNECTION) private readonly db: Database) {}
 
   // Grading Queue Management
   async getGradingQueue(

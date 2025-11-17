@@ -58,7 +58,7 @@ export class EmailProcessor {
       );
 
       this.logger.log(
-        `Bulk email job ${job.id} completed: ${result.successful} succeeded, ${result.failed} failed`,
+        `Bulk email job ${job.id} completed: ${result.success} succeeded, ${result.failed} failed`,
       );
       return result;
     } catch (error) {

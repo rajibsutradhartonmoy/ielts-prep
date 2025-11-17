@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { FileUploadService } from './file-upload.service';
+import { AuthenticatedRequest } from '../../common/types/request.types';
 
 @Controller('file-upload')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -26,7 +27,7 @@ export class FileUploadController {
   @Roles('organization_admin', 'teacher')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
@@ -43,7 +44,7 @@ export class FileUploadController {
   @Roles('organization_admin', 'teacher')
   @UseInterceptors(FileInterceptor('file'))
   async uploadAudio(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
@@ -56,7 +57,7 @@ export class FileUploadController {
   @Roles('organization_admin', 'teacher')
   @UseInterceptors(FileInterceptor('file'))
   async uploadVideo(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
@@ -73,7 +74,7 @@ export class FileUploadController {
   @Roles('organization_admin', 'teacher')
   @UseInterceptors(FileInterceptor('file'))
   async uploadDocument(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
@@ -90,7 +91,7 @@ export class FileUploadController {
   @Roles('organization_admin', 'teacher')
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadMultipleFiles(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @UploadedFiles() files: Express.Multer.File[],
     @Body('type') type: 'image' | 'audio' | 'video' | 'document',
   ) {
@@ -108,7 +109,7 @@ export class FileUploadController {
   @Roles('organization_admin')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOrganizationLogo(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
@@ -124,7 +125,7 @@ export class FileUploadController {
   @Roles('organization_admin')
   @UseInterceptors(FileInterceptor('file'))
   async uploadAndParseCSV(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {

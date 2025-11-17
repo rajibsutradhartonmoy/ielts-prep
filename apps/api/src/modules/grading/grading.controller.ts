@@ -12,6 +12,7 @@ import {
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { AuthenticatedRequest } from '../../common/types/request.types';
 import { GradingService } from './grading.service';
 import {
   GradeResponseDto,
@@ -29,7 +30,7 @@ export class GradingController {
   @Get('queue')
   @Roles('organization_admin', 'teacher')
   async getGradingQueue(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Query('teacherId') teacherId?: string,
     @Query('status') status?: string,
     @Query('priority') priority?: string,
@@ -59,7 +60,7 @@ export class GradingController {
 
   @Get('queue/:queueItemId')
   @Roles('organization_admin', 'teacher')
-  async getQueueItem(@Request() req, @Param('queueItemId') queueItemId: string) {
+  async getQueueItem(@Request() req: AuthenticatedRequest, @Param('queueItemId') queueItemId: string) {
     return this.gradingService.getQueueItemById(
       req.user.organizationId,
       queueItemId,
@@ -69,7 +70,7 @@ export class GradingController {
   @Post('queue/:queueItemId/assign')
   @Roles('organization_admin')
   async assignGrading(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('queueItemId') queueItemId: string,
     @Body() dto: AssignGradingDto,
   ) {
@@ -83,7 +84,7 @@ export class GradingController {
   @Put('queue/:queueItemId')
   @Roles('organization_admin', 'teacher')
   async updateQueueItem(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('queueItemId') queueItemId: string,
     @Body() dto: UpdateQueueItemDto,
   ) {
@@ -98,7 +99,7 @@ export class GradingController {
   @Post('grade')
   @Roles('teacher')
   async gradeResponse(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: GradeResponseDto,
     @Query('timeSpent') timeSpent?: string,
   ) {
@@ -121,7 +122,7 @@ export class GradingController {
   @Post('templates')
   @Roles('teacher', 'organization_admin')
   async createFeedbackTemplate(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: CreateFeedbackTemplateDto,
   ) {
     return this.gradingService.createFeedbackTemplate(
@@ -134,7 +135,7 @@ export class GradingController {
   @Get('templates')
   @Roles('teacher', 'organization_admin')
   async getFeedbackTemplates(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Query('category') category?: string,
   ) {
     const teacherId = req.user.role === 'teacher' ? req.user.teacherId : undefined;

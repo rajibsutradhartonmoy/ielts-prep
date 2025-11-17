@@ -6,7 +6,7 @@ import { AnalyticsService } from '../../analytics/analytics.service';
 export interface ReportJob {
   organizationId: string;
   reportType: 'student' | 'test' | 'teacher' | 'organization';
-  entityId?: string;
+  testId?: string;
   format: 'pdf' | 'csv' | 'excel' | 'json';
   dateRange: {
     startDate: Date;
@@ -30,9 +30,10 @@ export class ReportProcessor {
     try {
       const report = await this.analyticsService.generateReport(
         job.data.organizationId,
-        job.data.reportType,
+        job.data.requestedBy,
         {
-          entityId: job.data.entityId,
+          reportType: job.data.reportType,
+          testId: job.data.testId,
           format: job.data.format,
           startDate: job.data.dateRange.startDate,
           endDate: job.data.dateRange.endDate,
@@ -43,8 +44,8 @@ export class ReportProcessor {
       return report;
     } catch (error) {
       this.logger.error(
-        `Report generation job ${job.id} failed: ${error.message}`,
-        error.stack,
+        `Report generation job ${job.id} failed: ${(error as Error).message}`,
+        (error as Error).stack,
       );
       throw error;
     }
@@ -66,9 +67,10 @@ export class ReportProcessor {
       try {
         const report = await this.analyticsService.generateReport(
           reportJob.organizationId,
-          reportJob.reportType,
+          reportJob.requestedBy,
           {
-            entityId: reportJob.entityId,
+            reportType: reportJob.reportType,
+            testId: reportJob.testId,
             format: reportJob.format,
             startDate: reportJob.dateRange.startDate,
             endDate: reportJob.dateRange.endDate,
@@ -78,9 +80,9 @@ export class ReportProcessor {
       } catch (error) {
         this.logger.error(
           `Failed to generate report in batch job ${job.id}`,
-          error.stack,
+          (error as Error).stack,
         );
-        results.push({ success: false, error: error.message });
+        results.push({ success: false, error: (error as Error).message });
       }
     }
 

@@ -13,6 +13,7 @@ import {
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { AuthenticatedRequest } from '../../common/types/request.types';
 import { TestService } from './test.service';
 import {
   CreateTestDto,
@@ -33,7 +34,7 @@ export class TestController {
   // Test endpoints
   @Post()
   @Roles('organization_admin', 'teacher')
-  async createTest(@Request() req, @Body() dto: CreateTestDto) {
+  async createTest(@Request() req: AuthenticatedRequest, @Body() dto: CreateTestDto) {
     return this.testService.createTest(
       req.user.organizationId,
       dto,
@@ -44,7 +45,7 @@ export class TestController {
   @Get()
   @Roles('organization_admin', 'teacher')
   async getTests(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Query('status') status?: string,
     @Query('type') type?: string,
     @Query('search') search?: string,
@@ -62,26 +63,26 @@ export class TestController {
 
   @Get('statistics')
   @Roles('organization_admin', 'teacher')
-  async getTestStatistics(@Request() req) {
+  async getTestStatistics(@Request() req: AuthenticatedRequest) {
     return this.testService.getTestStatistics(req.user.organizationId);
   }
 
   @Get(':testId')
   @Roles('organization_admin', 'teacher')
-  async getTestById(@Request() req, @Param('testId') testId: string) {
+  async getTestById(@Request() req: AuthenticatedRequest, @Param('testId') testId: string) {
     return this.testService.getTestById(req.user.organizationId, testId);
   }
 
   @Get(':testId/full')
   @Roles('organization_admin', 'teacher')
-  async getFullTest(@Request() req, @Param('testId') testId: string) {
+  async getFullTest(@Request() req: AuthenticatedRequest, @Param('testId') testId: string) {
     return this.testService.getFullTest(req.user.organizationId, testId);
   }
 
   @Put(':testId')
   @Roles('organization_admin', 'teacher')
   async updateTest(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Body() dto: UpdateTestDto,
   ) {
@@ -90,14 +91,14 @@ export class TestController {
 
   @Delete(':testId')
   @Roles('organization_admin', 'teacher')
-  async deleteTest(@Request() req, @Param('testId') testId: string) {
+  async deleteTest(@Request() req: AuthenticatedRequest, @Param('testId') testId: string) {
     return this.testService.deleteTest(req.user.organizationId, testId);
   }
 
   @Post(':testId/clone')
   @Roles('organization_admin', 'teacher')
   async cloneTest(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Body() dto: CloneTestDto,
   ) {
@@ -113,7 +114,7 @@ export class TestController {
   @Post(':testId/sections')
   @Roles('organization_admin', 'teacher')
   async createSection(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Body() dto: CreateSectionDto,
   ) {
@@ -126,14 +127,14 @@ export class TestController {
 
   @Get(':testId/sections')
   @Roles('organization_admin', 'teacher')
-  async getSections(@Request() req, @Param('testId') testId: string) {
+  async getSections(@Request() req: AuthenticatedRequest, @Param('testId') testId: string) {
     return this.testService.getSections(req.user.organizationId, testId);
   }
 
   @Get(':testId/sections/:sectionId')
   @Roles('organization_admin', 'teacher')
   async getSectionById(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
   ) {
@@ -147,7 +148,7 @@ export class TestController {
   @Put(':testId/sections/:sectionId')
   @Roles('organization_admin', 'teacher')
   async updateSection(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
     @Body() dto: UpdateSectionDto,
@@ -163,7 +164,7 @@ export class TestController {
   @Delete(':testId/sections/:sectionId')
   @Roles('organization_admin', 'teacher')
   async deleteSection(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
   ) {
@@ -178,7 +179,7 @@ export class TestController {
   @Post(':testId/sections/:sectionId/questions')
   @Roles('organization_admin', 'teacher')
   async createQuestion(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
     @Body() dto: CreateQuestionDto,
@@ -194,7 +195,7 @@ export class TestController {
   @Get(':testId/sections/:sectionId/questions')
   @Roles('organization_admin', 'teacher')
   async getQuestions(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
   ) {
@@ -208,7 +209,7 @@ export class TestController {
   @Get(':testId/sections/:sectionId/questions/:questionId')
   @Roles('organization_admin', 'teacher')
   async getQuestionById(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
     @Param('questionId') questionId: string,
@@ -224,7 +225,7 @@ export class TestController {
   @Put(':testId/sections/:sectionId/questions/:questionId')
   @Roles('organization_admin', 'teacher')
   async updateQuestion(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
     @Param('questionId') questionId: string,
@@ -242,7 +243,7 @@ export class TestController {
   @Delete(':testId/sections/:sectionId/questions/:questionId')
   @Roles('organization_admin', 'teacher')
   async deleteQuestion(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
     @Param('questionId') questionId: string,
@@ -258,7 +259,7 @@ export class TestController {
   @Put(':testId/sections/:sectionId/questions/reorder')
   @Roles('organization_admin', 'teacher')
   async reorderQuestions(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('testId') testId: string,
     @Param('sectionId') sectionId: string,
     @Body() dto: ReorderQuestionsDto,

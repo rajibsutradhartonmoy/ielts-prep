@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { eq, and, sql, gte, lte, inArray, desc } from 'drizzle-orm';
-import { DatabaseService } from '../../database/database.service';
+import { Inject } from '@nestjs/common';
+import { DATABASE_CONNECTION, Database } from '../../database/database.module';
 import * as schema from '../../database/schema';
 import { GenerateReportDto, GetAnalyticsDto } from './dto/analytics.dto';
 
 @Injectable()
 export class AnalyticsService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(@Inject(DATABASE_CONNECTION) private readonly db: Database) {}
 
   // Student Analytics
   async getStudentAnalytics(studentId: string) {

@@ -1,9 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-
-export interface TenantRequest extends Request {
-  tenantId?: string;
-}
+import { Response, NextFunction } from 'express';
+import { TenantRequest } from '../types/request.types';
 
 @Injectable()
 export class TenantContextMiddleware implements NestMiddleware {
@@ -20,7 +17,7 @@ export class TenantContextMiddleware implements NestMiddleware {
       if (subdomain && subdomain !== 'www' && subdomain !== 'api') {
         // This could be a slug, we'd need to resolve it to an ID
         // For now, we'll just store it and resolve later
-        req['tenantSlug'] = subdomain;
+        req.tenantSlug = subdomain;
       }
     }
 
