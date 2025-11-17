@@ -200,7 +200,7 @@ export class GradingService {
         gradedById: teacherId,
         gradedAt: new Date(),
         feedback: dto.overallFeedback,
-        detailedScores: dto.writingScores || dto.speakingScores || {},
+        detailedScores: (dto.writingScores || dto.speakingScores || {}) as Record<string, number>,
         updatedAt: new Date(),
       })
       .where(eq(schema.questionResponses.id, dto.responseId));
@@ -319,9 +319,9 @@ export class GradingService {
         lastGradedAt: new Date(),
       });
     } else {
-      const totalGraded = stats.totalGraded + 1;
+      const totalGraded = (stats.totalGraded ?? 0) + 1;
       const avgTime = Math.round(
-        (stats.averageTimePerGrading * stats.totalGraded + timeSpent) /
+        ((stats.averageTimePerGrading ?? 0) * (stats.totalGraded ?? 0) + timeSpent) /
           totalGraded,
       );
 
@@ -368,12 +368,13 @@ export class GradingService {
     ];
 
     if (teacherId) {
-      conditions.push(
-        or(
-          eq(schema.feedbackTemplates.teacherId, teacherId),
-          eq(schema.feedbackTemplates.isGlobal, true),
-        ),
+      const teacherCondition = or(
+        eq(schema.feedbackTemplates.teacherId, teacherId),
+        eq(schema.feedbackTemplates.isGlobal, true),
       );
+      if (teacherCondition) {
+        conditions.push(teacherCondition);
+      }
     }
 
     if (category) {

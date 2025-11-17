@@ -146,19 +146,20 @@ export class TestAssignmentService {
     const conditions = [eq(schema.testAssignments.organizationId, organizationId)];
 
     if (studentId) {
-      conditions.push(
-        or(
-          eq(schema.testAssignments.studentId, studentId),
-          // Include batch assignments for this student
-          inArray(
-            schema.testAssignments.batchId,
-            this.db
-              .select({ id: schema.batchStudents.batchId })
-              .from(schema.batchStudents)
-              .where(eq(schema.batchStudents.studentId, studentId)),
-          ),
+      const studentCondition = or(
+        eq(schema.testAssignments.studentId, studentId),
+        // Include batch assignments for this student
+        inArray(
+          schema.testAssignments.batchId,
+          this.db
+            .select({ id: schema.batchStudents.batchId })
+            .from(schema.batchStudents)
+            .where(eq(schema.batchStudents.studentId, studentId)),
         ),
       );
+      if (studentCondition) {
+        conditions.push(studentCondition);
+      }
     }
 
     if (batchId) {
@@ -173,12 +174,13 @@ export class TestAssignmentService {
     if (status === 'upcoming') {
       conditions.push(gte(schema.testAssignments.startDate, now));
     } else if (status === 'active') {
-      conditions.push(
-        and(
-          lte(schema.testAssignments.startDate, now),
-          gte(schema.testAssignments.dueDate, now),
-        ),
+      const activeCondition = and(
+        lte(schema.testAssignments.startDate, now),
+        gte(schema.testAssignments.dueDate, now),
       );
+      if (activeCondition) {
+        conditions.push(activeCondition);
+      }
     } else if (status === 'past') {
       conditions.push(lte(schema.testAssignments.dueDate, now));
     }
@@ -291,16 +293,17 @@ export class TestAssignmentService {
       }
     } else {
       // Check if student is in batch
+      if (!assignment.batchId) {
+        throw new ForbiddenException('Assignment is not for you or your batch');
+      }
+      const batchCondition = and(
+        eq(schema.batchStudents.batchId, assignment.batchId),
+        eq(schema.batchStudents.studentId, studentId),
+      );
       const [batchStudent] = await this.db
         .select()
         .from(schema.batchStudents)
-        .where(
-          and(
-            eq(schema.batchStudents.batchId, assignment.batchId),
-            eq(schema.batchStudents.studentId, studentId),
-            eq(schema.batchStudents.isActive, true),
-          ),
-        );
+        .where(batchCondition || undefined);
 
       if (!batchStudent) {
         throw new ForbiddenException('You are not in the assigned batch');
@@ -313,7 +316,7 @@ export class TestAssignmentService {
       throw new BadRequestException('Assignment has not started yet');
     }
 
-    if (now > assignment.dueDate && !assignment.settings.allowLateSubmission) {
+    if (now > assignment.dueDate && !assignment.settings?.allowLateSubmission) {
       throw new BadRequestException('Assignment deadline has passed');
     }
 
@@ -334,7 +337,7 @@ export class TestAssignmentService {
       .from(schema.tests)
       .where(eq(schema.tests.id, assignment.testId));
 
-    const maxAttempts = test.settings.maxAttempts || 1;
+    const maxAttempts = test.settings?.maxAttempts || 1;
 
     const completedAttempts = attempts.filter(
       (a) => a.status === 'submitted' || a.status === 'graded',
@@ -448,15 +451,19 @@ export class TestAssignmentService {
       },
     });
 
+    if (!test) {
+      throw new NotFoundException('Test not found');
+    }
+
     // Process answers and create question responses
     let totalScore = 0;
     let maxPossibleScore = 0;
-    const needsManualGrading = [];
+    const needsManualGrading: any[] = [];
 
     for (const answer of dto.answers) {
-      const question = test.sections
-        .flatMap((s) => s.questions)
-        .find((q) => q.id === answer.questionId);
+      const question = (test.sections as any[])
+        .flatMap((s: any) => s.questions)
+        .find((q: any) => q.id === answer.questionId);
 
       if (!question) continue;
 
@@ -494,7 +501,7 @@ export class TestAssignmentService {
         .returning();
 
       if (!isAutoGradable) {
-        needsManualGrading.push(response);
+        needsManualGrading.push({ ...response, questionType: question.type });
       }
     }
 
@@ -538,7 +545,7 @@ export class TestAssignmentService {
 
   private checkAnswer(question: any, studentAnswer: any): boolean {
     if (question.type === 'multiple_choice') {
-      const correctOption = question.options?.find((o) => o.isCorrect);
+      const correctOption = question.options?.find((o: any) => o.isCorrect);
       return correctOption?.id === studentAnswer;
     }
 

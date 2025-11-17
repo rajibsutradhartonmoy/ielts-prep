@@ -74,12 +74,13 @@ export class TestService {
     }
 
     if (search) {
-      conditions.push(
-        or(
-          ilike(schema.tests.title, `%${search}%`),
-          ilike(schema.tests.description, `%${search}%`),
-        ),
+      const searchCondition = or(
+        ilike(schema.tests.title, `%${search}%`),
+        ilike(schema.tests.description, `%${search}%`),
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     const [tests, countResult] = await Promise.all([

@@ -33,10 +33,13 @@ export class ReportProcessor {
         job.data.requestedBy,
         {
           reportType: job.data.reportType,
-          testId: job.data.testId,
-          format: job.data.format,
-          startDate: job.data.dateRange.startDate,
-          endDate: job.data.dateRange.endDate,
+          reportFormat: job.data.format,
+          title: `${job.data.reportType} Report`,
+          dateRange: job.data.dateRange ? {
+            startDate: new Date(job.data.dateRange.startDate).toISOString(),
+            endDate: new Date(job.data.dateRange.endDate).toISOString(),
+          } : undefined,
+          filters: job.data.testId ? { testId: job.data.testId } : undefined,
         },
       );
 
@@ -70,10 +73,13 @@ export class ReportProcessor {
           reportJob.requestedBy,
           {
             reportType: reportJob.reportType,
-            testId: reportJob.testId,
-            format: reportJob.format,
-            startDate: reportJob.dateRange.startDate,
-            endDate: reportJob.dateRange.endDate,
+            reportFormat: reportJob.format,
+            title: `${reportJob.reportType} Report`,
+            dateRange: reportJob.dateRange ? {
+              startDate: new Date(reportJob.dateRange.startDate).toISOString(),
+              endDate: new Date(reportJob.dateRange.endDate).toISOString(),
+            } : undefined,
+            filters: reportJob.testId ? { testId: reportJob.testId } : undefined,
           },
         );
         results.push({ success: true, report });

@@ -103,6 +103,9 @@ export class GradingController {
     @Body() dto: GradeResponseDto,
     @Query('timeSpent') timeSpent?: string,
   ) {
+    if (!req.user.teacherId) {
+      throw new Error('Teacher ID not found in user context');
+    }
     const time = timeSpent ? parseInt(timeSpent, 10) : 0;
     return this.gradingService.gradeResponse(
       req.user.organizationId,

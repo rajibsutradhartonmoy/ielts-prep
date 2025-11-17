@@ -128,6 +128,9 @@ export class TestAssignmentController {
   @Post(':assignmentId/start')
   @Roles('student')
   async startAttempt(@Request() req: AuthenticatedRequest, @Param('assignmentId') assignmentId: string) {
+    if (!req.user.studentId) {
+      throw new Error('Student ID not found in user context');
+    }
     return this.testAssignmentService.startAttempt(
       req.user.studentId,
       assignmentId,
@@ -139,13 +142,16 @@ export class TestAssignmentController {
   async getAttempt(@Request() req: AuthenticatedRequest, @Param('attemptId') attemptId: string) {
     // Students can only see their own attempts
     if (req.user.role === 'student') {
+      if (!req.user.studentId) {
+        throw new Error('Student ID not found in user context');
+      }
       return this.testAssignmentService.getAttempt(
         req.user.studentId,
         attemptId,
       );
     }
     // Teachers/admins can see all attempts (add proper authorization)
-    return this.testAssignmentService.getAttempt(null, attemptId);
+    return this.testAssignmentService.getAttempt('', attemptId);
   }
 
   @Put('attempts/:attemptId/progress')
@@ -155,6 +161,9 @@ export class TestAssignmentController {
     @Param('attemptId') attemptId: string,
     @Body() dto: SaveProgressDto,
   ) {
+    if (!req.user.studentId) {
+      throw new Error('Student ID not found in user context');
+    }
     return this.testAssignmentService.saveProgress(
       req.user.studentId,
       attemptId,
@@ -169,6 +178,9 @@ export class TestAssignmentController {
     @Param('attemptId') attemptId: string,
     @Body() dto: SubmitTestDto,
   ) {
+    if (!req.user.studentId) {
+      throw new Error('Student ID not found in user context');
+    }
     return this.testAssignmentService.submitTest(
       req.user.studentId,
       attemptId,
@@ -182,6 +194,9 @@ export class TestAssignmentController {
     @Request() req: AuthenticatedRequest,
     @Param('assignmentId') assignmentId: string,
   ) {
+    if (!req.user.studentId) {
+      throw new Error('Student ID not found in user context');
+    }
     return this.testAssignmentService.getStudentAttempts(
       req.user.studentId,
       assignmentId,

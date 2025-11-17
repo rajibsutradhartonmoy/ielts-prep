@@ -177,8 +177,8 @@ export class AnalyticsService {
 
     const avgBandScore =
       recentAttempts
-        .filter((a) => a.bandScore)
-        .reduce((sum, a) => sum + a.bandScore, 0) / recentAttempts.length || 0;
+        .filter((a) => a.bandScore !== null)
+        .reduce((sum, a) => sum + (a.bandScore ?? 0), 0) / recentAttempts.length || 0;
 
     return {
       overview: {
