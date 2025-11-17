@@ -22,6 +22,9 @@ COPY packages/shared-types ./packages/shared-types
 WORKDIR /app/apps/api
 RUN pnpm run build
 
+# Verify build output exists
+RUN ls -la dist/ && echo "✅ Build successful!"
+
 # Production stage
 FROM node:20-alpine AS production
 
@@ -38,12 +41,15 @@ COPY --from=builder /app/package.json /app/pnpm-lock.yaml* /app/pnpm-workspace.y
 COPY --from=builder /app/apps/api/package.json ./apps/api/
 COPY --from=builder /app/packages/shared-types/package.json ./packages/shared-types/
 
-# Install production dependencies only
-RUN pnpm install --prod --frozen-lockfile
+# Install dependencies (including tsx for migrations)
+RUN pnpm install --frozen-lockfile
 
 # Copy built application
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/drizzle ./apps/api/drizzle
+COPY --from=builder /app/apps/api/src/database ./apps/api/src/database
+COPY --from=builder /app/apps/api/drizzle.config.ts ./apps/api/
+COPY --from=builder /app/apps/api/tsconfig.json ./apps/api/
 COPY --from=builder /app/packages/shared-types ./packages/shared-types
 
 # Copy entrypoint script
@@ -51,6 +57,12 @@ COPY apps/api/docker-entrypoint.sh /app/apps/api/
 
 # Set working directory
 WORKDIR /app/apps/api
+
+# Verify all required files exist
+RUN ls -la dist/ && \
+    ls -la drizzle/ && \
+    ls -la src/database/ && \
+    echo "✅ All files copied successfully!"
 
 # Install postgresql-client and netcat for health checks
 USER root
