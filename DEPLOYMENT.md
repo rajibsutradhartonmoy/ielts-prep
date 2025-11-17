@@ -45,12 +45,12 @@ JWT_SECRET=<generate-strong-secret-key>
 JWT_ACCESS_EXPIRATION=15m
 JWT_REFRESH_EXPIRATION=7d
 
-# Email (SMTP)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASSWORD=<app-password>
-SMTP_FROM=IELTS Prep Platform <noreply@yourdomain.com>
+# AWS SES (Email Service)
+AWS_ACCESS_KEY_ID=<your-aws-access-key>
+AWS_SECRET_ACCESS_KEY=<your-aws-secret-key>
+AWS_REGION=us-east-1
+SES_FROM_EMAIL=IELTS Prep Platform <noreply@yourdomain.com>
+# Note: Verify sender email in AWS SES console
 
 # CORS
 CORS_ORIGIN=https://yourdomain.com

@@ -22,6 +22,7 @@
     "migration:create": "drizzle-kit generate"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.933.0",
     "@nestjs/bull": "^11.0.4",
     "@nestjs/common": "^10.3.0",
     "@nestjs/config": "^3.1.1",

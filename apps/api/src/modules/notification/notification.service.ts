@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 
 export interface EmailTemplate {
   subject: string;
@@ -10,8 +11,24 @@ export interface EmailTemplate {
 @Injectable()
 export class NotificationService {
   private readonly logger = new Logger(NotificationService.name);
+  private readonly sesClient: SESClient;
+  private readonly fromEmail: string;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {
+    // Initialize AWS SES client
+    this.sesClient = new SESClient({
+      region: this.configService.get('AWS_REGION', 'us-east-1'),
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID', ''),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY', ''),
+      },
+    });
+
+    this.fromEmail = this.configService.get(
+      'SES_FROM_EMAIL',
+      'IELTS Prep Platform <noreply@ielts-prep.com>',
+    );
+  }
 
   async sendEmail(
     to: string,
@@ -20,16 +37,34 @@ export class NotificationService {
     context: Record<string, any> = {},
   ): Promise<boolean> {
     try {
-      // In production, integrate with email service (SendGrid, AWS SES, etc.)
-      this.logger.log(`Sending email to ${to}: ${subject}`);
-      this.logger.debug(`Template: ${template}`, context);
+      const htmlBody = this.renderTemplate(template, context);
+      const textBody = this.renderTextTemplate(template, context);
 
-      // Placeholder for actual email sending
-      // await this.emailClient.send({
-      //   to,
-      //   subject,
-      //   html: this.renderTemplate(template, context),
-      // });
+      const command = new SendEmailCommand({
+        Source: this.fromEmail,
+        Destination: {
+          ToAddresses: [to],
+        },
+        Message: {
+          Subject: {
+            Data: subject,
+            Charset: 'UTF-8',
+          },
+          Body: {
+            Html: {
+              Data: htmlBody,
+              Charset: 'UTF-8',
+            },
+            Text: {
+              Data: textBody,
+              Charset: 'UTF-8',
+            },
+          },
+        },
+      });
+
+      const response = await this.sesClient.send(command);
+      this.logger.log(`Email sent successfully to ${to}. MessageId: ${response.MessageId}`);
 
       return true;
     } catch (error) {
@@ -53,10 +88,11 @@ export class NotificationService {
     const success = results.filter((r) => r.status === 'fulfilled').length;
     const failed = results.filter((r) => r.status === 'rejected').length;
 
+    this.logger.log(`Bulk email completed: ${success} succeeded, ${failed} failed`);
     return { success, failed };
   }
 
-  // Email templates
+  // Email template methods
   async sendTestAssignmentEmail(
     studentEmail: string,
     studentName: string,
@@ -173,12 +209,249 @@ export class NotificationService {
     return true;
   }
 
-  // Helper method to render email templates
+  // Helper methods to render email templates
   private renderTemplate(
     template: string,
     context: Record<string, any>,
   ): string {
-    // Placeholder - in production, use a template engine like Handlebars
-    return `<html><body>${template}</body></html>`;
+    // Template rendering based on template name
+    const templates: Record<string, (ctx: any) => string> = {
+      'test-assignment': (ctx) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #4F46E5; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px; background: #f9fafb; }
+            .button { display: inline-block; padding: 12px 24px; background: #4F46E5; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>New Test Assignment</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${ctx.studentName},</p>
+              <p>You have been assigned a new IELTS test: <strong>${ctx.testTitle}</strong></p>
+              <p><strong>Due Date:</strong> ${ctx.dueDate}</p>
+              <p>Please complete the test before the deadline.</p>
+              <a href="${ctx.assignmentUrl}" class="button">Start Test</a>
+            </div>
+            <div class="footer">
+              <p>IELTS Prep Platform - Your path to IELTS success</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+      'grading-complete': (ctx) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #10B981; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px; background: #f9fafb; }
+            .score { font-size: 48px; color: #10B981; font-weight: bold; text-align: center; margin: 20px 0; }
+            .button { display: inline-block; padding: 12px 24px; background: #10B981; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Test Results Available</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${ctx.studentName},</p>
+              <p>Your test <strong>${ctx.testTitle}</strong> has been graded!</p>
+              <div class="score">Band ${ctx.bandScore}</div>
+              <p>Click below to view your detailed results and feedback.</p>
+              <a href="${ctx.resultUrl}" class="button">View Results</a>
+            </div>
+            <div class="footer">
+              <p>IELTS Prep Platform - Your path to IELTS success</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+      'report-generated': (ctx) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #8B5CF6; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px; background: #f9fafb; }
+            .button { display: inline-block; padding: 12px 24px; background: #8B5CF6; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Report Ready</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${ctx.userName},</p>
+              <p>Your report <strong>${ctx.reportTitle}</strong> has been generated successfully.</p>
+              <a href="${ctx.downloadUrl}" class="button">Download Report</a>
+            </div>
+            <div class="footer">
+              <p>IELTS Prep Platform - Analytics & Insights</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+      'welcome': (ctx) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #4F46E5; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px; background: #f9fafb; }
+            .button { display: inline-block; padding: 12px 24px; background: #4F46E5; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Welcome to ${ctx.organizationName}!</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${ctx.userName},</p>
+              <p>Welcome to the IELTS Prep Platform! Your account has been created successfully.</p>
+              <p>Get started by logging in and exploring your dashboard.</p>
+              <a href="${ctx.loginUrl}" class="button">Login Now</a>
+            </div>
+            <div class="footer">
+              <p>IELTS Prep Platform - Your path to IELTS success</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+      'password-reset': (ctx) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #EF4444; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px; background: #f9fafb; }
+            .button { display: inline-block; padding: 12px 24px; background: #EF4444; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+            .warning { background: #FEF2F2; border-left: 4px solid #EF4444; padding: 15px; margin: 20px 0; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Password Reset Request</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${ctx.userName},</p>
+              <p>We received a request to reset your password. Click the button below to reset it.</p>
+              <a href="${ctx.resetUrl}" class="button">Reset Password</a>
+              <div class="warning">
+                <p><strong>Security Notice:</strong></p>
+                <p>If you didn't request this password reset, please ignore this email. The link will expire in 1 hour.</p>
+              </div>
+            </div>
+            <div class="footer">
+              <p>IELTS Prep Platform - Security Team</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+      'test-reminder': (ctx) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #F59E0B; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px; background: #f9fafb; }
+            .urgent { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 15px; margin: 20px 0; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Test Reminder</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${ctx.studentName},</p>
+              <div class="urgent">
+                <p><strong>⏰ Reminder:</strong> Your test <strong>${ctx.testTitle}</strong> is due in <strong>${ctx.hoursRemaining} hours</strong>!</p>
+                <p><strong>Due Date:</strong> ${ctx.dueDate}</p>
+              </div>
+              <p>Don't miss the deadline. Complete your test now!</p>
+            </div>
+            <div class="footer">
+              <p>IELTS Prep Platform - Test Reminders</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+
+    const templateFn = templates[template];
+    if (!templateFn) {
+      this.logger.warn(`Template not found: ${template}. Using default template.`);
+      return `<html><body><p>Email content for ${template}</p></body></html>`;
+    }
+
+    return templateFn(context);
+  }
+
+  private renderTextTemplate(
+    template: string,
+    context: Record<string, any>,
+  ): string {
+    // Plain text versions of templates
+    const textTemplates: Record<string, (ctx: any) => string> = {
+      'test-assignment': (ctx) =>
+        `Hi ${ctx.studentName},\n\nYou have been assigned a new IELTS test: ${ctx.testTitle}\n\nDue Date: ${ctx.dueDate}\n\nPlease complete the test before the deadline.\n\nStart Test: ${ctx.assignmentUrl}\n\n---\nIELTS Prep Platform`,
+      'grading-complete': (ctx) =>
+        `Hi ${ctx.studentName},\n\nYour test "${ctx.testTitle}" has been graded!\n\nBand Score: ${ctx.bandScore}\n\nView Results: ${ctx.resultUrl}\n\n---\nIELTS Prep Platform`,
+      'report-generated': (ctx) =>
+        `Hi ${ctx.userName},\n\nYour report "${ctx.reportTitle}" has been generated successfully.\n\nDownload: ${ctx.downloadUrl}\n\n---\nIELTS Prep Platform`,
+      'welcome': (ctx) =>
+        `Hi ${ctx.userName},\n\nWelcome to ${ctx.organizationName}!\n\nYour account has been created successfully.\n\nLogin: ${ctx.loginUrl}\n\n---\nIELTS Prep Platform`,
+      'password-reset': (ctx) =>
+        `Hi ${ctx.userName},\n\nWe received a request to reset your password.\n\nReset your password: ${ctx.resetUrl}\n\nIf you didn't request this, please ignore this email. The link expires in 1 hour.\n\n---\nIELTS Prep Platform`,
+      'test-reminder': (ctx) =>
+        `Hi ${ctx.studentName},\n\n⏰ REMINDER: Your test "${ctx.testTitle}" is due in ${ctx.hoursRemaining} hours!\n\nDue Date: ${ctx.dueDate}\n\nDon't miss the deadline!\n\n---\nIELTS Prep Platform`,
+    };
+
+    const textTemplateFn = textTemplates[template];
+    if (!textTemplateFn) {
+      return `Email content for ${template}`;
+    }
+
+    return textTemplateFn(context);
   }
 }
