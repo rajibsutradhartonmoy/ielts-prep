@@ -130,4 +130,38 @@ export class OrganizationService {
       },
     };
   }
+
+  // Branding Methods
+  async getBranding(organizationId: string) {
+    const [branding] = await this.db
+      .select()
+      .from(schema.organizationBranding)
+      .where(eq(schema.organizationBranding.organizationId, organizationId));
+
+    return branding;
+  }
+
+  async updateBranding(organizationId: string, data: any) {
+    const existing = await this.getBranding(organizationId);
+
+    if (existing) {
+      const [updated] = await this.db
+        .update(schema.organizationBranding)
+        .set(data)
+        .where(eq(schema.organizationBranding.organizationId, organizationId))
+        .returning();
+
+      return updated;
+    } else {
+      const [created] = await this.db
+        .insert(schema.organizationBranding)
+        .values({
+          organizationId,
+          ...data,
+        })
+        .returning();
+
+      return created;
+    }
+  }
 }

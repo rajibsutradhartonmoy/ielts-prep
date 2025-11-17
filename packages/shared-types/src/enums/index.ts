@@ -103,3 +103,26 @@ export enum BatchStatus {
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
 }
+
+export enum ReportType {
+  STUDENT_PERFORMANCE = 'student_performance',
+  TEST_ANALYTICS = 'test_analytics',
+  TEACHER_PERFORMANCE = 'teacher_performance',
+  ORGANIZATION_OVERVIEW = 'organization_overview',
+  BATCH_PROGRESS = 'batch_progress',
+  CUSTOM = 'custom',
+}
+
+export enum ReportFormat {
+  PDF = 'pdf',
+  CSV = 'csv',
+  EXCEL = 'excel',
+  JSON = 'json',
+}
+
+export enum ReportStatus {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+}

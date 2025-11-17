@@ -8,3 +8,4 @@ export * from './batch.schema';
 export * from './test.schema';
 export * from './test-attempt.schema';
 export * from './grading.schema';
+export * from './analytics.schema';

@@ -501,3 +501,94 @@ export interface TeacherGradingStats {
   metadata?: Record<string, any>;
   updatedAt: Date;
 }
+
+// Phase 6: Analytics, Reports & Organization Customization Types
+
+export interface StudentAnalytics {
+  id: string;
+  studentId: string;
+  organizationId: string;
+  totalTestsTaken: number;
+  totalTestsPassed: number;
+  averageBandScore?: number;
+  bestBandScore?: number;
+  listeningAvgScore?: number;
+  readingAvgScore?: number;
+  writingAvgScore?: number;
+  speakingAvgScore?: number;
+  totalTimeSpent?: number;
+  averageTimePerTest?: number;
+  scoreImprovement?: number;
+  weakAreas: string[];
+  strongAreas: string[];
+  lastTestDate?: Date;
+  testsThisMonth: number;
+  testsThisWeek: number;
+  metadata?: Record<string, any>;
+  updatedAt: Date;
+}
+
+export interface TestAnalytics {
+  id: string;
+  testId: string;
+  organizationId: string;
+  totalAttempts: number;
+  completedAttempts: number;
+  averageScore?: number;
+  averageBandScore?: number;
+  passRate?: number;
+  averageCompletionTime?: number;
+  difficultyRating?: number;
+  questionsWithLowAccuracy?: Array<{ questionId: string; accuracy: number }>;
+  scoreDistribution?: Record<string, number>;
+  metadata?: Record<string, any>;
+  updatedAt: Date;
+}
+
+export interface OrganizationAnalytics {
+  id: string;
+  organizationId: string;
+  totalStudents: number;
+  activeStudents: number;
+  totalTeachers: number;
+  totalBatches: number;
+  totalTests: number;
+  publishedTests: number;
+  totalAttempts: number;
+  completedAttempts: number;
+  overallPassRate?: number;
+  averageBandScore?: number;
+  studentEngagementRate?: number;
+  testsCreatedThisMonth: number;
+  testsAssignedThisMonth: number;
+  activeStudentsThisMonth: number;
+  storageUsedMb: number;
+  metadata?: Record<string, any>;
+  updatedAt: Date;
+}
+
+export interface GeneratedReport {
+  id: string;
+  organizationId: string;
+  generatedById: string;
+  reportType: string;
+  reportFormat: string;
+  status: string;
+  title: string;
+  description?: string;
+  filters?: Record<string, any>;
+  dateRange?: {
+    startDate: string;
+    endDate: string;
+  };
+  fileUrl?: string;
+  fileSize?: number;
+  data?: any;
+  errorMessage?: string;
+  processingStartedAt?: Date;
+  processingCompletedAt?: Date;
+  expiresAt?: Date;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
