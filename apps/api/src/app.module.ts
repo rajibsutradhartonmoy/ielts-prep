@@ -14,6 +14,8 @@ import { StudentModule } from './modules/student/student.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { BatchModule } from './modules/batch/batch.module';
 import { TestModule } from './modules/test/test.module';
+import { TestAssignmentModule } from './modules/test-assignment/test-assignment.module';
+import { GradingModule } from './modules/grading/grading.module';
 
 import { TenantContextMiddleware } from './common/middleware/tenant-context.middleware';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -41,6 +43,8 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     TeacherModule,
     BatchModule,
     TestModule,
+    TestAssignmentModule,
+    GradingModule,
   ],
   providers: [
     {

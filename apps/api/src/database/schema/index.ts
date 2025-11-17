@@ -6,3 +6,5 @@ export * from './student.schema';
 export * from './teacher.schema';
 export * from './batch.schema';
 export * from './test.schema';
+export * from './test-attempt.schema';
+export * from './grading.schema';

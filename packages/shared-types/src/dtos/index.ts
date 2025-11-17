@@ -285,3 +285,105 @@ export interface CloneTestRequest {
 export interface ReorderQuestionsRequest {
   questions: Array<{ id: string; orderIndex: number }>;
 }
+
+// Phase 4: Test Assignment & Student Test Taking DTOs
+
+export interface TestAssignmentSettingsRequest {
+  allowLateSubmission?: boolean;
+  showResultsImmediately?: boolean;
+  showCorrectAnswers?: boolean;
+  sendEmailNotification?: boolean;
+}
+
+export interface CreateIndividualAssignmentRequest {
+  testId: string;
+  studentId: string;
+  startDate: string;
+  dueDate: string;
+  settings?: TestAssignmentSettingsRequest;
+  instructions?: string;
+}
+
+export interface CreateBatchAssignmentRequest {
+  testId: string;
+  batchId: string;
+  startDate: string;
+  dueDate: string;
+  settings?: TestAssignmentSettingsRequest;
+  instructions?: string;
+}
+
+export interface UpdateAssignmentRequest {
+  startDate?: string;
+  dueDate?: string;
+  settings?: TestAssignmentSettingsRequest;
+  instructions?: string;
+}
+
+export interface SubmitAnswerRequest {
+  questionId: string;
+  answer: any;
+  flagged?: boolean;
+}
+
+export interface SaveProgressRequest {
+  answers: SubmitAnswerRequest[];
+  currentSectionIndex?: number;
+  currentQuestionIndex?: number;
+}
+
+export interface SubmitTestRequest {
+  answers: SubmitAnswerRequest[];
+}
+
+// Phase 5: Grading System DTOs
+
+export interface WritingScoresRequest {
+  taskAchievement: number;
+  coherenceCohesion: number;
+  lexicalResource: number;
+  grammaticalRangeAccuracy: number;
+  overallBand: number;
+}
+
+export interface SpeakingScoresRequest {
+  fluencyCoherence: number;
+  lexicalResource: number;
+  grammaticalRangeAccuracy: number;
+  pronunciation: number;
+  overallBand: number;
+}
+
+export interface SpecificCommentRequest {
+  section: string;
+  comment: string;
+  suggestion?: string;
+}
+
+export interface GradeResponseRequest {
+  responseId: string;
+  writingScores?: WritingScoresRequest;
+  speakingScores?: SpeakingScoresRequest;
+  overallFeedback: string;
+  strengthsHighlighted?: string[];
+  areasForImprovement?: string[];
+  specificComments?: SpecificCommentRequest[];
+  audioFeedbackUrl?: string;
+  annotatedResponse?: string;
+}
+
+export interface AssignGradingRequest {
+  teacherId: string;
+}
+
+export interface UpdateQueueItemRequest {
+  status?: 'pending' | 'in_progress' | 'completed' | 'disputed';
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
+}
+
+export interface CreateFeedbackTemplateRequest {
+  name: string;
+  category: string;
+  templateText: string;
+  isGlobal?: boolean;
+}

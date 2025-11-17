@@ -33,10 +33,30 @@ export enum TestStatus {
 }
 
 export enum TestAttemptStatus {
+  NOT_STARTED = 'not_started',
   IN_PROGRESS = 'in_progress',
   SUBMITTED = 'submitted',
   GRADED = 'graded',
   EXPIRED = 'expired',
+}
+
+export enum TestAssignmentType {
+  INDIVIDUAL = 'individual',
+  BATCH = 'batch',
+}
+
+export enum GradingQueueStatus {
+  PENDING = 'pending',
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  DISPUTED = 'disputed',
+}
+
+export enum GradingQueuePriority {
+  LOW = 'low',
+  NORMAL = 'normal',
+  HIGH = 'high',
+  URGENT = 'urgent',
 }
 
 export enum QuestionType {

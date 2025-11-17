@@ -8,8 +8,12 @@ import {
   BatchStatus,
   TestType,
   TestStatus,
+  TestAttemptStatus,
+  TestAssignmentType,
   SectionType,
   QuestionType,
+  GradingQueueStatus,
+  GradingQueuePriority,
 } from '../enums';
 
 export interface User {
@@ -320,4 +324,180 @@ export interface TestMedia {
   metadata?: Record<string, any>;
   uploadedById: string;
   createdAt: Date;
+}
+
+// Phase 4: Test Assignment & Student Test Taking Types
+
+export interface TestAssignmentSettings {
+  allowLateSubmission?: boolean;
+  showResultsImmediately?: boolean;
+  showCorrectAnswers?: boolean;
+  sendEmailNotification?: boolean;
+}
+
+export interface TestAssignment {
+  id: string;
+  organizationId: string;
+  testId: string;
+  assignmentType: TestAssignmentType;
+  studentId?: string;
+  batchId?: string;
+  assignedById: string;
+  startDate: Date;
+  dueDate: Date;
+  settings: TestAssignmentSettings;
+  instructions?: string;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface StudentAnswer {
+  questionId: string;
+  answer: any;
+  timeSpent?: number;
+  flagged?: boolean;
+}
+
+export interface AttemptMetrics {
+  totalTimeSpent: number;
+  questionsAnswered: number;
+  questionsFlagged: number;
+  sectionTimes: Record<string, number>;
+  tabSwitches?: number;
+  pauseCount?: number;
+}
+
+export interface TestAttempt {
+  id: string;
+  assignmentId: string;
+  studentId: string;
+  testId: string;
+  attemptNumber: number;
+  status: TestAttemptStatus;
+  startedAt?: Date;
+  submittedAt?: Date;
+  completedAt?: Date;
+  answers: StudentAnswer[];
+  currentSectionIndex: number;
+  currentQuestionIndex: number;
+  timeRemaining?: number;
+  metrics?: AttemptMetrics;
+  rawScore?: number;
+  maxScore?: number;
+  percentageScore?: number;
+  bandScore?: number;
+  isPassed?: boolean;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface QuestionResponse {
+  id: string;
+  attemptId: string;
+  questionId: string;
+  sectionId: string;
+  studentAnswer: any;
+  isCorrect?: boolean;
+  pointsEarned?: number;
+  maxPoints: number;
+  timeSpent?: number;
+  flagged: boolean;
+  needsManualGrading: boolean;
+  gradedById?: string;
+  gradedAt?: Date;
+  feedback?: string;
+  detailedScores?: Record<string, number>;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Phase 5: Grading System Types
+
+export interface GradingQueueItem {
+  id: string;
+  organizationId: string;
+  attemptId: string;
+  responseId: string;
+  assignedTeacherId?: string;
+  status: GradingQueueStatus;
+  priority: GradingQueuePriority;
+  questionType: string;
+  dueDate?: Date;
+  startedAt?: Date;
+  completedAt?: Date;
+  estimatedTime?: number;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface WritingScores {
+  taskAchievement: number;
+  coherenceCohesion: number;
+  lexicalResource: number;
+  grammaticalRangeAccuracy: number;
+  overallBand: number;
+}
+
+export interface SpeakingScores {
+  fluencyCoherence: number;
+  lexicalResource: number;
+  grammaticalRangeAccuracy: number;
+  pronunciation: number;
+  overallBand: number;
+}
+
+export interface SpecificComment {
+  section: string;
+  comment: string;
+  suggestion?: string;
+}
+
+export interface GradingFeedback {
+  id: string;
+  responseId: string;
+  teacherId: string;
+  writingScores?: WritingScores;
+  speakingScores?: SpeakingScores;
+  overallFeedback: string;
+  strengthsHighlighted: string[];
+  areasForImprovement: string[];
+  specificComments: SpecificComment[];
+  audioFeedbackUrl?: string;
+  annotatedResponse?: string;
+  timeSpentGrading?: number;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface FeedbackTemplate {
+  id: string;
+  organizationId: string;
+  teacherId?: string;
+  name: string;
+  category: string;
+  templateText: string;
+  isGlobal: boolean;
+  usageCount: number;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TeacherGradingStats {
+  id: string;
+  teacherId: string;
+  totalGraded: number;
+  writingTasksGraded: number;
+  speakingTasksGraded: number;
+  averageTimePerGrading?: number;
+  averageScoreGiven?: number;
+  lastGradedAt?: Date;
+  currentQueueSize: number;
+  metadata?: Record<string, any>;
+  updatedAt: Date;
 }
