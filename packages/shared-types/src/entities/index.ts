@@ -1,4 +1,12 @@
-import { UserRole, SubscriptionTier, SubscriptionStatus } from '../enums';
+import {
+  UserRole,
+  SubscriptionTier,
+  SubscriptionStatus,
+  StudentStatus,
+  TeacherSpecialization,
+  TeacherStatus,
+  BatchStatus,
+} from '../enums';
 
 export interface User {
   id: string;
@@ -92,4 +100,98 @@ export interface AuditLog {
   ipAddress?: string;
   userAgent?: string;
   createdAt: Date;
+}
+
+// Phase 2: User Management Types
+
+export interface StudentAddress {
+  street?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zip?: string;
+}
+
+export interface EmergencyContact {
+  name?: string;
+  relationship?: string;
+  phone?: string;
+  email?: string;
+}
+
+export interface Student {
+  id: string;
+  userId: string;
+  organizationId: string;
+  studentCode: string;
+  dateOfBirth?: Date;
+  phone?: string;
+  address?: StudentAddress;
+  emergencyContact?: EmergencyContact;
+  enrollmentDate: Date;
+  status: StudentStatus;
+  notes?: string;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
+  user?: User;
+}
+
+export interface Teacher {
+  id: string;
+  userId: string;
+  organizationId: string;
+  teacherCode: string;
+  specialization: TeacherSpecialization;
+  bio?: string;
+  qualifications?: string[];
+  yearsOfExperience?: number;
+  maxStudents?: number;
+  status: TeacherStatus;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
+  user?: User;
+}
+
+export interface Batch {
+  id: string;
+  organizationId: string;
+  name: string;
+  description?: string;
+  startDate: Date;
+  endDate?: Date;
+  maxStudents?: number;
+  status: BatchStatus;
+  settings?: BatchSettings;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
+  students?: Student[];
+  teachers?: Teacher[];
+}
+
+export interface BatchSettings {
+  allowLateJoining?: boolean;
+  autoCompleteOnEndDate?: boolean;
+  notifyOnChanges?: boolean;
+}
+
+export interface BatchStudent {
+  batchId: string;
+  studentId: string;
+  joinedAt: Date;
+  leftAt?: Date;
+  isActive: boolean;
+}
+
+export interface BatchTeacher {
+  batchId: string;
+  teacherId: string;
+  assignedAt: Date;
+  removedAt?: Date;
+  isActive: boolean;
 }
