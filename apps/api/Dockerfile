@@ -52,9 +52,9 @@ COPY apps/api/docker-entrypoint.sh /app/apps/api/
 # Set working directory
 WORKDIR /app/apps/api
 
-# Install postgresql-client for migration script
+# Install postgresql-client and netcat for health checks
 USER root
-RUN apk add --no-cache postgresql-client
+RUN apk add --no-cache postgresql-client netcat-openbsd
 
 # Create uploads directory
 RUN mkdir -p /app/uploads && chown -R node:node /app/uploads

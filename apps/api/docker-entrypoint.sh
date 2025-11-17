@@ -13,7 +13,7 @@ echo "✅ PostgreSQL is ready!"
 
 # Wait for Redis to be ready
 echo "⏳ Waiting for Redis..."
-until timeout 2 sh -c "echo > /dev/tcp/$REDIS_HOST/$REDIS_PORT" 2>/dev/null; do
+until nc -z "$REDIS_HOST" "$REDIS_PORT" 2>/dev/null; do
   echo "   Redis is unavailable - sleeping"
   sleep 2
 done
