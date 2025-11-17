@@ -41,10 +41,22 @@ export enum TestAttemptStatus {
 
 export enum QuestionType {
   MULTIPLE_CHOICE = 'multiple_choice',
-  TRUE_FALSE = 'true_false',
+  TRUE_FALSE_NOT_GIVEN = 'true_false_not_given',
   MATCHING = 'matching',
   FILL_BLANK = 'fill_blank',
   SHORT_ANSWER = 'short_answer',
+  SENTENCE_COMPLETION = 'sentence_completion',
+  SUMMARY_COMPLETION = 'summary_completion',
+  DIAGRAM_LABELING = 'diagram_labeling',
+  WRITING_TASK = 'writing_task',
+  SPEAKING_TASK = 'speaking_task',
+}
+
+export enum SectionType {
+  LISTENING = 'listening',
+  READING = 'reading',
+  WRITING = 'writing',
+  SPEAKING = 'speaking',
 }
 
 export enum StudentStatus {

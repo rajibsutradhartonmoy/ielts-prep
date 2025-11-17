@@ -13,6 +13,7 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { StudentModule } from './modules/student/student.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { BatchModule } from './modules/batch/batch.module';
+import { TestModule } from './modules/test/test.module';
 
 import { TenantContextMiddleware } from './common/middleware/tenant-context.middleware';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -39,6 +40,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     StudentModule,
     TeacherModule,
     BatchModule,
+    TestModule,
   ],
   providers: [
     {

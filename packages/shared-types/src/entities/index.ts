@@ -6,6 +6,10 @@ import {
   TeacherSpecialization,
   TeacherStatus,
   BatchStatus,
+  TestType,
+  TestStatus,
+  SectionType,
+  QuestionType,
 } from '../enums';
 
 export interface User {
@@ -194,4 +198,126 @@ export interface BatchTeacher {
   assignedAt: Date;
   removedAt?: Date;
   isActive: boolean;
+}
+
+// Phase 3: Test Management Types
+
+export interface TestSettings {
+  shuffleQuestions?: boolean;
+  showTimer?: boolean;
+  allowPause?: boolean;
+  showProgressBar?: boolean;
+  autoSubmitOnTimeout?: boolean;
+  preventTabSwitch?: boolean;
+  maxAttempts?: number;
+}
+
+export interface Test {
+  id: string;
+  organizationId: string;
+  createdById: string;
+  title: string;
+  description?: string;
+  type: TestType;
+  status: TestStatus;
+  totalDuration: number;
+  totalQuestions: number;
+  passingScore?: number;
+  instructions?: string;
+  settings: TestSettings;
+  tags: string[];
+  metadata?: Record<string, any>;
+  publishedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
+  sections?: TestSection[];
+}
+
+export interface SectionInstructions {
+  title: string;
+  content: string;
+  audioUrl?: string;
+}
+
+export interface TestSection {
+  id: string;
+  testId: string;
+  type: SectionType;
+  title: string;
+  instructions?: SectionInstructions;
+  duration: number;
+  orderIndex: number;
+  totalQuestions: number;
+  audioUrl?: string;
+  passageText?: string;
+  imageUrl?: string;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+  questions?: Question[];
+}
+
+export interface QuestionOption {
+  id: string;
+  label: string;
+  value: string;
+  isCorrect?: boolean;
+}
+
+export interface MatchingItem {
+  id: string;
+  left: string;
+  right: string;
+}
+
+export interface QuestionGradingCriteria {
+  maxScore: number;
+  rubric?: string;
+  sampleAnswer?: string;
+  keywords?: string[];
+  taskAchievement?: number;
+  coherenceCohesion?: number;
+  lexicalResource?: number;
+  grammaticalRange?: number;
+  fluencyCoherence?: number;
+  pronunciation?: number;
+}
+
+export interface Question {
+  id: string;
+  sectionId: string;
+  type: QuestionType;
+  questionText: string;
+  orderIndex: number;
+  points: number;
+  options?: QuestionOption[];
+  matchingItems?: MatchingItem[];
+  correctAnswer?: string;
+  acceptableAnswers?: string[];
+  caseSensitive?: boolean;
+  questionInstructions?: string;
+  gradingCriteria?: QuestionGradingCriteria;
+  imageUrl?: string;
+  audioUrl?: string;
+  explanation?: string;
+  hints?: string[];
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TestMedia {
+  id: string;
+  testId: string;
+  fileName: string;
+  fileType: string;
+  mimeType: string;
+  fileSize: number;
+  url: string;
+  duration?: number;
+  description?: string;
+  metadata?: Record<string, any>;
+  uploadedById: string;
+  createdAt: Date;
 }

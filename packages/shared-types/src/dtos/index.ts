@@ -143,3 +143,145 @@ export interface AssignStudentsToBatchRequest {
 export interface AssignTeachersToBatchRequest {
   teacherIds: string[];
 }
+
+// Phase 3: Test Management DTOs
+
+export interface TestSettingsRequest {
+  shuffleQuestions?: boolean;
+  showTimer?: boolean;
+  allowPause?: boolean;
+  showProgressBar?: boolean;
+  autoSubmitOnTimeout?: boolean;
+  preventTabSwitch?: boolean;
+  maxAttempts?: number;
+}
+
+export interface CreateTestRequest {
+  title: string;
+  description?: string;
+  type: 'full_test' | 'speaking_only' | 'writing_only' | 'listening_only' | 'reading_only';
+  totalDuration: number;
+  passingScore?: number;
+  instructions?: string;
+  settings?: TestSettingsRequest;
+  tags?: string[];
+}
+
+export interface UpdateTestRequest {
+  title?: string;
+  description?: string;
+  status?: 'draft' | 'published' | 'archived';
+  totalDuration?: number;
+  passingScore?: number;
+  instructions?: string;
+  settings?: TestSettingsRequest;
+  tags?: string[];
+}
+
+export interface SectionInstructionsRequest {
+  title: string;
+  content: string;
+  audioUrl?: string;
+}
+
+export interface CreateSectionRequest {
+  type: 'listening' | 'reading' | 'writing' | 'speaking';
+  title: string;
+  instructions?: SectionInstructionsRequest;
+  duration: number;
+  orderIndex: number;
+  audioUrl?: string;
+  passageText?: string;
+  imageUrl?: string;
+}
+
+export interface UpdateSectionRequest {
+  title?: string;
+  instructions?: SectionInstructionsRequest;
+  duration?: number;
+  orderIndex?: number;
+  audioUrl?: string;
+  passageText?: string;
+  imageUrl?: string;
+}
+
+export interface QuestionOptionRequest {
+  id: string;
+  label: string;
+  value: string;
+  isCorrect?: boolean;
+}
+
+export interface MatchingItemRequest {
+  id: string;
+  left: string;
+  right: string;
+}
+
+export interface GradingCriteriaRequest {
+  maxScore: number;
+  rubric?: string;
+  sampleAnswer?: string;
+  keywords?: string[];
+  taskAchievement?: number;
+  coherenceCohesion?: number;
+  lexicalResource?: number;
+  grammaticalRange?: number;
+  fluencyCoherence?: number;
+  pronunciation?: number;
+}
+
+export interface CreateQuestionRequest {
+  type:
+    | 'multiple_choice'
+    | 'true_false_not_given'
+    | 'matching'
+    | 'fill_blank'
+    | 'short_answer'
+    | 'sentence_completion'
+    | 'summary_completion'
+    | 'diagram_labeling'
+    | 'writing_task'
+    | 'speaking_task';
+  questionText: string;
+  orderIndex: number;
+  points?: number;
+  options?: QuestionOptionRequest[];
+  matchingItems?: MatchingItemRequest[];
+  correctAnswer?: string;
+  acceptableAnswers?: string[];
+  caseSensitive?: boolean;
+  questionInstructions?: string;
+  gradingCriteria?: GradingCriteriaRequest;
+  imageUrl?: string;
+  audioUrl?: string;
+  explanation?: string;
+  hints?: string[];
+}
+
+export interface UpdateQuestionRequest {
+  questionText?: string;
+  orderIndex?: number;
+  points?: number;
+  options?: QuestionOptionRequest[];
+  matchingItems?: MatchingItemRequest[];
+  correctAnswer?: string;
+  acceptableAnswers?: string[];
+  caseSensitive?: boolean;
+  questionInstructions?: string;
+  gradingCriteria?: GradingCriteriaRequest;
+  imageUrl?: string;
+  audioUrl?: string;
+  explanation?: string;
+  hints?: string[];
+}
+
+export interface CloneTestRequest {
+  newTitle?: string;
+  includeSections?: boolean;
+  includeQuestions?: boolean;
+}
+
+export interface ReorderQuestionsRequest {
+  questions: Array<{ id: string; orderIndex: number }>;
+}
