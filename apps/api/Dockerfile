@@ -46,11 +46,21 @@ COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/drizzle ./apps/api/drizzle
 COPY --from=builder /app/packages/shared-types ./packages/shared-types
 
+# Copy entrypoint script
+COPY apps/api/docker-entrypoint.sh /app/apps/api/
+
 # Set working directory
 WORKDIR /app/apps/api
 
+# Install postgresql-client for migration script
+USER root
+RUN apk add --no-cache postgresql-client
+
 # Create uploads directory
 RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
+
+# Make entrypoint executable
+RUN chmod +x docker-entrypoint.sh
 
 # Switch to non-root user
 USER node
@@ -61,6 +71,9 @@ EXPOSE 3000
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:3000/health/liveness || exit 1
+
+# Use entrypoint script
+ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # Start the application
 CMD ["node", "dist/main.js"]

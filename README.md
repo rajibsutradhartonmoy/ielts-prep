@@ -35,15 +35,37 @@ ielts-prep/
 
 ## Getting Started
 
+### 🚀 Quick Start (One Command)
+
+**Fastest way to get started:**
+
+```bash
+cp .env.example .env
+# Edit .env and set JWT_SECRET and JWT_REFRESH_SECRET
+docker-compose up -d
+```
+
+**See [START.md](./START.md) for the complete 2-minute setup guide!**
+
+---
+
+### 📚 Detailed Setup Options
+
+Choose your preferred setup method:
+
+1. **[START.md](./START.md)** - ⚡ **Recommended**: One-command Docker setup (2 minutes)
+2. **[DOCKER-SETUP.md](./DOCKER-SETUP.md)** - 🐳 Complete Docker configuration guide
+3. **[SETUP.md](./SETUP.md)** - 🔧 Manual setup without Docker
+4. **[DEPLOYMENT.md](./DEPLOYMENT.md)** - 🚀 Production deployment guide
+
+---
+
 ### Prerequisites
 
-- Node.js >= 18.0.0
-- pnpm >= 8.0.0
-- Docker and Docker Compose (for local development)
-- PostgreSQL 15+
-- Redis 7+
+- **Docker & Docker Compose** (recommended) - OR
+- Node.js 20+, PostgreSQL 16+, Redis 7+ (manual setup)
 
-### Installation
+### Installation (Manual)
 
 1. Clone the repository:
    ```bash
@@ -59,8 +81,6 @@ ielts-prep/
 3. Copy environment files:
    ```bash
    cp .env.example .env
-   cp apps/api/.env.example apps/api/.env
-   cp apps/web/.env.example apps/web/.env
    ```
 
 4. Update the environment variables in the `.env` files
