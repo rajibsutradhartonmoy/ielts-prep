@@ -58,20 +58,6 @@ async function bootstrap() {
       'JWT-auth'
     )
     .addApiKey({ type: 'apiKey', name: 'X-Organization-Id', in: 'header' }, 'organization-id')
-    .addTag('Authentication', 'User authentication and authorization')
-    .addTag('System Admin', 'System administrator operations')
-    .addTag('Organization', 'Organization management')
-    .addTag('Users', 'User management')
-    .addTag('Students', 'Student management')
-    .addTag('Teachers', 'Teacher management')
-    .addTag('Batches', 'Batch/class management')
-    .addTag('Tests', 'Test creation and management')
-    .addTag('Test Assignments', 'Test assignment to students')
-    .addTag('Grading', 'Manual grading and feedback')
-    .addTag('Analytics', 'Performance analytics and reports')
-    .addTag('Notifications', 'Email notifications')
-    .addTag('File Upload', 'File upload and management')
-    .addTag('Health', 'System health checks')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
