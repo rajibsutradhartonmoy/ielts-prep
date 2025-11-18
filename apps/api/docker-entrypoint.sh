@@ -21,7 +21,7 @@ echo "✅ Redis is ready!"
 
 # Run database migrations
 echo "🔄 Running database migrations..."
-pnpm run db:migrate || {
+pnpm exec tsx src/database/migrate.ts || {
   echo "⚠️  Migration failed, but continuing..."
 }
 echo "✅ Migrations complete!"
