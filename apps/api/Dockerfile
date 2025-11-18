@@ -1,6 +1,9 @@
 # Build stage
 FROM node:20-alpine AS builder
 
+# Update package index and install build dependencies for native modules
+RUN apk update && apk add --no-cache python3 make g++
+
 # Install pnpm
 RUN npm install -g pnpm
 
@@ -23,16 +26,16 @@ WORKDIR /app/apps/api
 RUN pnpm run build
 
 # Verify build output exists
-RUN ls -la dist/ && echo "✅ Build successful!"
+RUN ls -la dist/ && find dist -name "main.js" && echo "✅ Build successful!"
 
 # Production stage
 FROM node:20-alpine AS production
 
+# Update package index and install build dependencies for native modules (bcrypt) and utilities
+RUN apk update && apk add --no-cache python3 make g++ curl
+
 # Install pnpm
 RUN npm install -g pnpm
-
-# Install curl for health checks
-RUN apk add --no-cache curl
 
 WORKDIR /app
 
@@ -60,6 +63,7 @@ WORKDIR /app/apps/api
 
 # Verify all required files exist
 RUN ls -la dist/ && \
+    find dist -name "main.js" && \
     ls -la drizzle/ && \
     ls -la src/database/ && \
     echo "✅ All files copied successfully!"

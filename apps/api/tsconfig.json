@@ -21,5 +21,7 @@
       "@/*": ["src/*"],
       "@ielts-prep/shared-types": ["../../packages/shared-types/src"]
     }
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

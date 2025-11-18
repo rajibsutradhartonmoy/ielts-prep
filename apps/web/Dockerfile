@@ -1,6 +1,9 @@
 # Build stage
 FROM node:20-alpine AS builder
 
+# Update package index
+RUN apk update
+
 # Install pnpm
 RUN npm install -g pnpm
 
@@ -29,9 +32,11 @@ RUN pnpm run build
 # Production stage
 FROM node:20-alpine AS production
 
-# Install pnpm and curl
-RUN npm install -g pnpm && \
-    apk add --no-cache curl
+# Update package index and install utilities
+RUN apk update && apk add --no-cache curl
+
+# Install pnpm
+RUN npm install -g pnpm
 
 WORKDIR /app
 

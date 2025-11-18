@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 
@@ -27,7 +27,7 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
-    }),
+    })
   );
 
   // Global prefix
@@ -37,13 +37,13 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('IELTS Prep API')
     .setDescription(
-      'Multi-tenant IELTS preparation platform API with comprehensive test management, grading, and analytics features',
+      'Multi-tenant IELTS preparation platform API with comprehensive test management, grading, and analytics features'
     )
     .setVersion('1.0')
     .setContact(
       'IELTS Prep Support',
       'https://github.com/yourusername/ielts-prep',
-      'support@ielts-prep.com',
+      'support@ielts-prep.com'
     )
     .setLicense('MIT', 'https://opensource.org/licenses/MIT')
     .addBearerAuth(
@@ -55,12 +55,9 @@ async function bootstrap() {
         description: 'Enter JWT token',
         in: 'header',
       },
-      'JWT-auth',
+      'JWT-auth'
     )
-    .addApiKey(
-      { type: 'apiKey', name: 'X-Organization-Id', in: 'header' },
-      'organization-id',
-    )
+    .addApiKey({ type: 'apiKey', name: 'X-Organization-Id', in: 'header' }, 'organization-id')
     .addTag('Authentication', 'User authentication and authorization')
     .addTag('System Admin', 'System administrator operations')
     .addTag('Organization', 'Organization management')
