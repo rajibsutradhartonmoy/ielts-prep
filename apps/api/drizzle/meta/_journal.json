@@ -8,6 +8,13 @@
       "when": 1763421323377,
       "tag": "0000_third_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1763426817369,
+      "tag": "0001_aberrant_gauntlet",
+      "breakpoints": true
     }
   ]
 }

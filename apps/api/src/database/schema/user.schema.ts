@@ -27,6 +27,10 @@ export const users = pgTable(
     role: userRoleEnum('role').notNull(),
     isActive: boolean('is_active').notNull().default(true),
     emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true }),
+    emailVerificationToken: varchar('email_verification_token', { length: 255 }),
+    emailVerificationExpires: timestamp('email_verification_expires', { withTimezone: true }),
+    passwordResetToken: varchar('password_reset_token', { length: 255 }),
+    passwordResetExpires: timestamp('password_reset_expires', { withTimezone: true }),
     lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
     preferences: json('preferences').$type<UserPreferences>().default({
       language: 'en',

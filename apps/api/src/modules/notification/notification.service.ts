@@ -164,6 +164,19 @@ export class NotificationService {
     });
   }
 
+  async sendEmailVerification(
+    userEmail: string,
+    userName: string,
+    organizationName: string,
+    verificationUrl: string,
+  ) {
+    return this.sendEmail(userEmail, 'Verify Your Email', 'email-verification', {
+      userName,
+      organizationName,
+      verificationUrl,
+    });
+  }
+
   async sendPasswordResetEmail(
     userEmail: string,
     userName: string,
@@ -314,6 +327,39 @@ export class NotificationService {
         </body>
         </html>
       `,
+      'email-verification': (ctx) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #10B981; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px; background: #f9fafb; }
+            .button { display: inline-block; padding: 12px 24px; background: #10B981; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Verify Your Email</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${ctx.userName},</p>
+              <p>Welcome to ${ctx.organizationName} on the IELTS Prep Platform!</p>
+              <p>Please verify your email address by clicking the button below:</p>
+              <a href="${ctx.verificationUrl}" class="button">Verify Email</a>
+              <p style="margin-top: 20px; color: #666; font-size: 14px;">This link will expire in 24 hours.</p>
+            </div>
+            <div class="footer">
+              <p>IELTS Prep Platform - Your path to IELTS success</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
       'welcome': (ctx) => `
         <!DOCTYPE html>
         <html>
@@ -439,6 +485,8 @@ export class NotificationService {
         `Hi ${ctx.studentName},\n\nYour test "${ctx.testTitle}" has been graded!\n\nBand Score: ${ctx.bandScore}\n\nView Results: ${ctx.resultUrl}\n\n---\nIELTS Prep Platform`,
       'report-generated': (ctx) =>
         `Hi ${ctx.userName},\n\nYour report "${ctx.reportTitle}" has been generated successfully.\n\nDownload: ${ctx.downloadUrl}\n\n---\nIELTS Prep Platform`,
+      'email-verification': (ctx) =>
+        `Hi ${ctx.userName},\n\nWelcome to ${ctx.organizationName} on the IELTS Prep Platform!\n\nPlease verify your email address by clicking the link below:\n\n${ctx.verificationUrl}\n\nThis link will expire in 24 hours.\n\n---\nIELTS Prep Platform`,
       'welcome': (ctx) =>
         `Hi ${ctx.userName},\n\nWelcome to ${ctx.organizationName}!\n\nYour account has been created successfully.\n\nLogin: ${ctx.loginUrl}\n\n---\nIELTS Prep Platform`,
       'password-reset': (ctx) =>
