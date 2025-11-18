@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    organizationId: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +30,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -41,6 +42,11 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
+
+      // Store tokens in localStorage
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+
       toast.success('Login successful');
       router.push('/dashboard');
     } catch (error) {
@@ -87,6 +93,23 @@ export default function LoginPage() {
                 required
                 disabled={isLoading}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="organizationId">Organization ID</Label>
+              <Input
+                id="organizationId"
+                type="text"
+                placeholder="Your organization ID (UUID)"
+                value={formData.organizationId}
+                onChange={(e) =>
+                  setFormData({ ...formData, organizationId: e.target.value })
+                }
+                required
+                disabled={isLoading}
+              />
+              <p className="text-xs text-muted-foreground">
+                You received your organization ID during registration
+              </p>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
